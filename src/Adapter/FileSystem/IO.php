@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Codin\Stash\Adapter\FileSystem;
 
+use FilesystemIterator;
+use GlobIterator;
+use SplFileInfo;
+
 class IO
 {
     public function createDir(string $path, int $permissions = 0700): bool
@@ -14,7 +18,22 @@ class IO
 
         \chmod($path, $permissions);
 
-        return true;
+        return \is_dir($path);
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function scanDir(string $path, string $extension): array
+    {
+        $it = new GlobIterator(\sprintf('%s/*.%s', $path, $extension), FilesystemIterator::SKIP_DOTS);
+        $files = [];
+
+        foreach ($it as $fileInfo) {
+            $files[] = $fileInfo instanceof SplFileInfo ? $fileInfo->getPathname() : $fileInfo;
+        }
+
+        return $files;
     }
 
     public function readFile(string $filepath): string
@@ -34,11 +53,11 @@ class IO
 
     public function writeFile(string $filepath, string $contents): int
     {
-        if (!\is_file($filepath)) {
+        if (!\is_writable(dirname($filepath))) {
             return 0;
         }
 
-        if (!\is_writable($filepath)) {
+        if (\is_file($filepath) && !\is_writable($filepath)) {
             return 0;
         }
 

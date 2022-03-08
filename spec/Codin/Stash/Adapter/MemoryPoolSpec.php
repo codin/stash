@@ -16,6 +16,15 @@ class MemoryPoolSpec extends ObjectBehavior
         $this->getItem('foo')->shouldReturn($item);
     }
 
+    public function it_should_check_item(Item $item)
+    {
+        $item->isHit()->shouldBeCalled()->willReturn(true);
+
+        $this->beConstructedWith(['foo' => $item]);
+
+        $this->hasItem('foo')->shouldReturn(true);
+    }
+
     public function it_should_get_empty_item()
     {
         $this->getItem('foo')->shouldReturnAnInstanceOf(Item::class);
@@ -53,5 +62,14 @@ class MemoryPoolSpec extends ObjectBehavior
         $this->save($item);
 
         $this->getItem('foo')->shouldReturn($item);
+    }
+
+    public function it_should_commit_deferred_items(Item $item)
+    {
+        $item->getKey()->willReturn('foo');
+
+        $this->saveDeferred($item);
+
+        $this->commit();
     }
 }

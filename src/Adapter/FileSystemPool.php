@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Codin\Stash\Adapter;
 
 use Codin\Stash\Item;
-use FilesystemIterator;
-use GlobIterator;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use SplFileInfo;
 
 class FileSystemPool extends AbstractPool implements CacheItemPoolInterface
 {
@@ -20,6 +17,8 @@ class FileSystemPool extends AbstractPool implements CacheItemPoolInterface
     protected FileSystem\IO $io;
 
     protected FileSystem\Serialiser $serialiser;
+
+    protected FileSystem\KeyHasher $keyHasher;
 
     /**
      * @param string $path
@@ -33,13 +32,15 @@ class FileSystemPool extends AbstractPool implements CacheItemPoolInterface
         string $extension = 'cache',
         array $deferred = [],
         ?FileSystem\IO $io = null,
-        ?FileSystem\Serialiser $serialiser = null
+        ?FileSystem\Serialiser $serialiser = null,
+        ?FileSystem\KeyHasher $keyHasher = null
     ) {
         $this->path = $path;
         $this->extension = $extension;
         $this->deferred = $deferred;
         $this->io = $io ?? new FileSystem\IO();
         $this->serialiser = $serialiser ?? new FileSystem\PhpSerialiser();
+        $this->keyHasher = $keyHasher ?? new FileSystem\KeyHasher();
 
         $this->io->createDir($path);
     }
@@ -54,7 +55,7 @@ class FileSystemPool extends AbstractPool implements CacheItemPoolInterface
         $item = $this->getData($path);
 
         if (!$item instanceof Item || $item->hasExpired()) {
-            return $this->createItem($key, null);
+            return $this->createItem($key, null, false);
         }
 
         return $item;
@@ -72,8 +73,8 @@ class FileSystemPool extends AbstractPool implements CacheItemPoolInterface
 
         $values = [];
 
-        foreach ($keys as $index => $key) {
-            $values[$index] = $this->getItem($key);
+        foreach ($keys as $key) {
+            $values[] = $this->getItem($key);
         }
 
         return $values;
@@ -120,7 +121,7 @@ class FileSystemPool extends AbstractPool implements CacheItemPoolInterface
      */
     protected function getFilepath(string $key): string
     {
-        $hash = \hash('sha256', $key);
+        $hash = $this->keyHasher->create($key);
 
         return \sprintf('%s/%s.%s', $this->path, $hash, $this->extension);
     }
@@ -130,12 +131,10 @@ class FileSystemPool extends AbstractPool implements CacheItemPoolInterface
      */
     protected function getKeys(): array
     {
-        $it = new GlobIterator(\sprintf('%s/*.%s', $this->path, $this->extension), FilesystemIterator::SKIP_DOTS);
         $keys = [];
 
-        foreach ($it as $fileInfo) {
-            $path = $fileInfo instanceof SplFileInfo ? $fileInfo->getPathname() : $fileInfo;
-            if ($item = $this->getData($path)) {
+        foreach ($this->io->scanDir($this->path, $this->extension) as $filepath) {
+            if ($item = $this->getData($filepath)) {
                 $keys[] = $item->getKey();
             }
         }

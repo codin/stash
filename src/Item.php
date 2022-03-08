@@ -28,7 +28,7 @@ class Item implements CacheItemInterface
      * @param bool $hit
      * @param DateTimeInterface|null $expires
      */
-    public function __construct(string $key, $value, bool $hit = false, ?DateTimeInterface $expires = null)
+    public function __construct(string $key, $value, bool $hit = true, ?DateTimeInterface $expires = null)
     {
         $this->key = $key;
         $this->value = $value;

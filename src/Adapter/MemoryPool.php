@@ -33,7 +33,7 @@ class MemoryPool extends AbstractPool implements CacheItemPoolInterface
             return $this->pool[$key];
         }
 
-        return $this->createItem($key, null);
+        return $this->createItem($key, null, false);
     }
 
     /**

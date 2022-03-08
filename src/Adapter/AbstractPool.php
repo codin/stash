@@ -90,12 +90,4 @@ abstract class AbstractPool
 
         return true;
     }
-
-    /**
-     * Commit deferred items
-     */
-    public function __deconstuct(): void
-    {
-        $this->commit();
-    }
 }

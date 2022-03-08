@@ -14,7 +14,7 @@ class RedisPool extends AbstractPool implements CacheItemPoolInterface
     protected Redis\ConnectionManager $cm;
 
     /**
-     * @param Redis\ConnectionManager $redis
+     * @param Redis\ConnectionManager $cm
      * @param array<CacheItemInterface> $deferred
      */
     public function __construct(Redis\ConnectionManager $cm, array $deferred = [])
@@ -32,7 +32,7 @@ class RedisPool extends AbstractPool implements CacheItemPoolInterface
         $value = $this->cm->getConnection()->get($key);
 
         if (false === $value) {
-            return $this->createItem($key, null);
+            return $this->createItem($key, null, false);
         }
 
         $ttl = $this->cm->getConnection()->ttl($key);
@@ -51,14 +51,10 @@ class RedisPool extends AbstractPool implements CacheItemPoolInterface
             $keys = $this->cm->getConnection()->keys('*');
         }
 
-        $values = $this->cm->getConnection()->mGet($keys);
+        $values = [];
 
-        foreach ($keys as $index => $key) {
-            if (false === $values[$index]) {
-                $values[$index] = $this->createItem($key, null);
-            } else {
-                $values[$index] = $this->createItem($key, $values[$index], true);
-            }
+        foreach ($keys as $key) {
+            $values[] = $this->getItem($key);
         }
 
         return $values;

@@ -1,6 +1,7 @@
 /bin
 /vendor
 /coverage
+/tmp
 *.phar
 *.lock
 *.cache
