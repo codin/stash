@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Codin\Stash\Adapter\FileSystem;
 
+use Codin\Stash\Exceptions;
 use Psr\Cache\CacheItemInterface;
 
 class PhpSerialiser implements Serialiser
@@ -18,7 +19,7 @@ class PhpSerialiser implements Serialiser
         $object = unserialize($data);
 
         if (!$object instanceof CacheItemInterface) {
-            throw new \RuntimeException('Failed to decode data for unknown object');
+            throw new Exceptions\SerialisationError('Failed to decode data for unknown object');
         }
 
         return $object;

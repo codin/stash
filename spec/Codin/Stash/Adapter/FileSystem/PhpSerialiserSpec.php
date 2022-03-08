@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace spec\Codin\Stash\Adapter\FileSystem;
 
+use Codin\Stash\Exceptions\SerialisationError;
 use Codin\Stash\Item;
 use PhpSpec\ObjectBehavior;
 
@@ -33,6 +34,6 @@ class PhpSerialiserSpec extends ObjectBehavior
 
         $encoded = serialize($item);
 
-        $this->shouldThrow(\RuntimeException::class)->duringDecode($encoded);
+        $this->shouldThrow(SerialisationError::class)->duringDecode($encoded);
     }
 }

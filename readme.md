@@ -2,13 +2,16 @@
 
 Example
 
-	use Stash\{
+	use Codin\Stash\{
 		Item,
-		RedisPool
+		Adapter\RedisPool
+        Adapter\Redis\ConnectionResolver
 	};
 
-	$redis = new Redis;
-	$pool = new RedisPool($redis);
+    $resolver = new ConnectionResolver(static function () {
+        return new Redis();
+    });
+	$pool = new RedisPool($resolver);
 
 	$item = new Item('my-key', 'some data');
 	$item->expiresAfter(3600); // 1 hour
@@ -18,3 +21,10 @@ Example
 	$item = $pool->getItem('my-key');
 	echo $item->get(); // some data
 	echo $item->isHit(); // true
+
+## Testing
+
+```
+php bin/phpstan
+php bin/phpspec run
+```

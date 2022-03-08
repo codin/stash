@@ -11,8 +11,7 @@
         }
     ],
     "provide": {
-        "psr/cache-implementation": "1.0",
-        "psr/simple-cache-implementation": "1.0"
+        "psr/cache-implementation": "1.0"
     },
     "require": {
         "php": ">=7.4",
