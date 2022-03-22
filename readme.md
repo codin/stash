@@ -6,29 +6,31 @@
 
 Example
 
-	use Codin\Stash\{
-		Item,
-		Adapter\RedisPool
-        Adapter\Redis\ConnectionResolver
-	};
+```php
+use Codin\Stash\{
+	Item,
+	Adapter\RedisPool
+    Adapter\Redis\ConnectionResolver
+};
 
-    $resolver = new ConnectionResolver(static function () {
-        return new Redis();
-    });
-	$pool = new RedisPool($resolver);
+$resolver = new ConnectionResolver(static function () {
+    return new Redis();
+});
+$pool = new RedisPool($resolver);
 
-	$item = new Item('my-key', 'some data');
-	$item->expiresAfter(3600); // 1 hour
+$item = new Item('my-key', 'some data');
+$item->expiresAfter(3600); // 1 hour
 
-	$pool->save($item);
+$pool->save($item);
 
-	$item = $pool->getItem('my-key');
-	echo $item->get(); // some data
-	echo $item->isHit(); // true
+$item = $pool->getItem('my-key');
+echo $item->get(); // some data
+echo $item->isHit(); // true
+```
 
 ## Testing
 
-```
+```shell
 php bin/phpstan
 php bin/phpspec run
 ```
