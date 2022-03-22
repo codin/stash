@@ -1,5 +1,9 @@
 # PSR6 Cache Implementation
 
+![version](https://img.shields.io/github/v/tag/codin/stash)
+![workflow](https://img.shields.io/github/workflow/status/codin/stash/Composer)
+![license](https://img.shields.io/github/license/codin/stash)
+
 Example
 
 	use Codin\Stash\{

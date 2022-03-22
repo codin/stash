@@ -1,6 +1,6 @@
 {
     "name": "codin/stash",
-    "license": "Apache-2.0",
+    "license": "MIT",
     "type": "library",
     "authors": [
         {
@@ -18,10 +18,10 @@
         "psr/cache": "^1"
     },
     "require-dev": {
-        "friends-of-phpspec/phpspec-code-coverage": "^6",
-        "friendsofphp/php-cs-fixer": "^3",
-        "phpstan/phpstan": "^1",
-        "phpspec/phpspec": "^7"
+        "friendsofphp/php-cs-fixer": "@stable",
+        "friends-of-phpspec/phpspec-code-coverage": "@stable",
+        "phpspec/phpspec": "@stable",
+        "phpstan/phpstan": "@stable"
     },
     "autoload": {
         "psr-4": {
@@ -29,11 +29,22 @@
         }
     },
     "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
         "bin-dir": "bin"
     },
     "scripts": {
         "psr": [
             "./bin/php-cs-fixer fix . --allow-risky=yes --rules=@PSR2,no_unused_imports,ordered_imports,ordered_interfaces,single_quote,trailing_comma_in_multiline"
+        ],
+        "test": [
+            "phpstan analyse --no-progress --no-ansi --configuration=phpstan.neon",
+            "phpspec run --no-coverage --no-ansi --no-interaction --format=dot"
+        ],
+        "uninstall": [
+            "rm -rf ./bin",
+            "rm -rf ./vendor",
+            "rm ./composer.lock"
         ]
     }
 }

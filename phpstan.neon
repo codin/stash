@@ -1,5 +1,10 @@
 parameters:
     level: max
+    bootstrapFiles:
+        - %currentWorkingDirectory%/vendor/autoload.php
     paths:
         - %currentWorkingDirectory%/src
-    ignoreErrors:
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    inferPrivatePropertyTypeFromConstructor: true
+    tmpDir: tmp
